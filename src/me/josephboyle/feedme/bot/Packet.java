@@ -1,8 +1,10 @@
 package me.josephboyle.feedme.bot;
 
+import com.google.cloud.language.v1.AnalyzeSyntaxResponse;
 import com.google.cloud.language.v1.Document;
-import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Document.Type;
+import com.google.cloud.language.v1.EncodingType;
+import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.cloud.language.v1.Sentiment;
 
 public class Packet {
@@ -14,6 +16,7 @@ public class Packet {
 	public PacketType sender;
 	private String rawText;
 	private Sentiment sentiment;
+	private AnalyzeSyntaxResponse syntax;
 	private Document document;
 	private LanguageServiceClient language;
 	
@@ -33,4 +36,9 @@ public class Packet {
 		sentiment = language.analyzeSentiment(document).getDocumentSentiment();
 	}
 
+	public void processSyntax(){
+		if(document == null) createDocument();
+		syntax = language.analyzeSyntax(document, EncodingType.NONE);
+	}
+	
 }
