@@ -14,8 +14,8 @@ public class Packet {
 	public enum PacketType{USER, BOT, START};
 	
 	public PacketType sender;
-	private String rawText;
-	private Sentiment sentiment;
+	public String rawText;
+	public Sentiment sentiment;
 	private AnalyzeSyntaxResponse syntax;
 	private Document document;
 	private LanguageServiceClient language;

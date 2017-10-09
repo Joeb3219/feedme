@@ -22,5 +22,10 @@
   		<artifactId>google-cloud-language</artifactId>
   		<version>0.24.0-beta</version>
   	</dependency>
+  	<dependency>
+	    <groupId>org.json</groupId>
+	    <artifactId>json</artifactId>
+	    <version>20170516</version>
+	</dependency>
   </dependencies>
 </project>
