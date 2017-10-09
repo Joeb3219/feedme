@@ -3,7 +3,9 @@ package me.josephboyle.feedme;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.gson.Gson;
@@ -25,20 +27,18 @@ public class FeedMe {
 		
 		Packet packet = new Packet(language, "", Packet.PacketType.START);
 		bot.processInputs(packet);
+
+		ArrayList<Results> allResults = generateAllRestaurantsNearby(null);
 		
-		try{
-			InputStream inStream = WebRequest.getPlacesRequest("nearbysearch", "type=restaurant&location=" + WebRequest.latitude + "," + WebRequest.longitude + "&radius=20000");
-			InputStreamReader inReader = new InputStreamReader(inStream);
-			GoogleMapper results = new Gson().fromJson( inReader , GoogleMapper.class);
-			System.out.println("Status: " + results.status);
-			for(Results result : results.results){
-				System.out.println(result.toString());
-				System.out.println("====================================");
-			}
-			
-		}catch(IOException e){
-			e.printStackTrace();
+//		Results[] allResults = new Results[60];
+		
+		for(Results result : allResults){
+			if(result == null) continue;
+			System.out.println(result.toString());
+			System.out.println("====================================");
 		}
+		
+		System.out.println("Found a total of " + allResults.size() + " results");
 		
 		if(1 == 1) return;
 		
@@ -51,6 +51,34 @@ public class FeedMe {
 			bot.processInputs(packet);
 		}
 		
+	}
+	
+	public static ArrayList<Results> generateAllRestaurantsNearby(String nextPage) throws IOException, InterruptedException{
+		ArrayList<Results> allResults = new ArrayList<Results>();
+		InputStream inStream;
+		if(nextPage == null) inStream = WebRequest.getPlacesRequest("nearbysearch", "type=restaurant&location=" + WebRequest.latitude + "," + WebRequest.longitude + "&radius=" + WebRequest.searchRadius);
+		else inStream = WebRequest.getPlacesRequest("nearbysearch", "pagetoken=" + nextPage);
+		InputStreamReader inReader = new InputStreamReader(inStream);
+		GoogleMapper results = new Gson().fromJson( inReader , GoogleMapper.class);
+		System.out.println("Status: " + results.status);
+		for(Results result : results.results){
+			if(!resultInList(allResults, result)) allResults.add(result);
+		}
+		if(results.next_page_token != null && !results.next_page_token.isEmpty()){
+			TimeUnit.SECONDS.sleep(2);
+			ArrayList<Results> returnedResults = generateAllRestaurantsNearby(results.next_page_token);
+			for(Results r : returnedResults){
+				if(!resultInList(allResults, r)) allResults.add(r);
+			}
+		}
+		return allResults;
+	}
+	
+	public static boolean resultInList(ArrayList<Results> results, Results result){
+		for(Results r : results){
+			if(r.id.equals(result.id)) return true;
+		}
+		return false;
 	}
 	
 }

@@ -12,6 +12,7 @@ public class WebRequest {
 
 	public static final String latitude = "40.5477";
 	public static final String longitude = "-74.4633";
+	public static final String searchRadius = "20000";
 	
 	public static String requestToString(InputStream stream) throws IOException{
 		String s = "", line = "";
