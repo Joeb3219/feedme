@@ -23,7 +23,7 @@ public class FeedMe {
 		bot.processInputs(packet);
 		
 		try{
-			List<EatStreetRestaurant> restaurants = EatStreetLoader.loadRestaurantsLive();
+			List<EatStreetRestaurant> restaurants = EatStreetLoader.loadRestaurantsCached();
 			System.out.println("Total number requests: " + restaurants.size());
 			System.out.println("================================================");
 			for(EatStreetRestaurant restaurant : restaurants){

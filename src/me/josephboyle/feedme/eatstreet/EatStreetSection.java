@@ -15,4 +15,15 @@ public class EatStreetSection {
 	@SerializedName("name")
 	public String name;
 	
+	public String toString(){
+		String s = "";
+		
+		s += "== " + name + " ==\r\n";
+		for(EatStreetItem i : items){
+			s += i + "\r\n";
+		}
+		
+		return s;
+	}
+	
 }

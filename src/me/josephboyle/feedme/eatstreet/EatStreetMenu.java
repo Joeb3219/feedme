@@ -8,5 +8,13 @@ public class EatStreetMenu {
 
 	@SerializedName("sections")
 	public List<EatStreetSection> sections;
+
+	public String toString(){
+		String s = "";
+		for(EatStreetSection section : sections){
+			s += section.toString();
+		}
+		return s;
+	}
 	
 }

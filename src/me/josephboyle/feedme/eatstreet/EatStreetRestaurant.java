@@ -79,6 +79,7 @@ public class EatStreetRestaurant {
 		String result = "";
 		result += name + "\r\n";
 		result += address + " (" + latitude + "," + longitude + ")";
+		result += menu.toString();
 		return result;
 	}
 	
