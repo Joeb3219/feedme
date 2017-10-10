@@ -1,21 +1,14 @@
 package me.josephboyle.feedme;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import com.google.cloud.language.v1.LanguageServiceClient;
-import com.google.gson.Gson;
 
 import me.josephboyle.feedme.bot.Bot;
 import me.josephboyle.feedme.bot.Packet;
+import me.josephboyle.feedme.eatstreet.EatStreetLoader;
 import me.josephboyle.feedme.eatstreet.EatStreetRestaurant;
-import me.josephboyle.feedme.eatstreet.EatStreetSearch;
-import me.josephboyle.feedme.tools.GoogleMapper;
-import me.josephboyle.feedme.tools.Results;
-import me.josephboyle.feedme.tools.WebRequest;
 
 public class FeedMe {
 
@@ -29,18 +22,19 @@ public class FeedMe {
 		Packet packet = new Packet(language, "", Packet.PacketType.START);
 		bot.processInputs(packet);
 		
-		generateRestaurants();
-		if(1 == 1) return;
-
-		ArrayList<Results> allResults = generateAllRestaurantsNearby();
-
-		for(Results result : allResults){
-			if(result == null) continue;
-			System.out.println(result.toString());
-			System.out.println("====================================");
+		try{
+			List<EatStreetRestaurant> restaurants = EatStreetLoader.loadRestaurantsLive();
+			System.out.println("Total number requests: " + restaurants.size());
+			System.out.println("================================================");
+			for(EatStreetRestaurant restaurant : restaurants){
+				System.out.println(restaurant.toString());
+				System.out.println("================================================");
+			}
+			System.out.println("Total number requests: " + restaurants.size());
+			EatStreetLoader.saveRestaurants(restaurants);
+		}catch(Exception e){
+			e.printStackTrace();
 		}
-		
-		System.out.println("Found a total of " + allResults.size() + " results");
 		
 		if(1 == 1) return;
 		
@@ -53,40 +47,6 @@ public class FeedMe {
 			bot.processInputs(packet);
 		}
 		
-	}
-
-	public static void generateRestaurants() throws IOException, InterruptedException{
-		InputStream inStream = WebRequest.getEatStreetRequest("search", "method=both&latitude=" + WebRequest.latitude + "&longitude=" + WebRequest.longitude);
-		InputStreamReader inReader = new InputStreamReader(inStream);
-		EatStreetSearch results = new Gson().fromJson( inReader , EatStreetSearch.class);
-		System.out.println("Total number requests: " + results.restaurants.size());
-		System.out.println("================================================");
-		for(EatStreetRestaurant restaurant : results.restaurants){
-			System.out.println(restaurant.toString());
-			System.out.println("================================================");
-		}
-		System.out.println("Total number requests: " + results.restaurants.size());
-	}
-	
-	public static ArrayList<Results> generateAllRestaurantsNearby() throws IOException, InterruptedException{
-		ArrayList<Results> allResults = new ArrayList<Results>();
-		InputStream inStream = WebRequest.getPlacesRequest("radarsearch", "type=restaurant&location=" + WebRequest.latitude + "," + WebRequest.longitude + "&radius=" + WebRequest.searchRadius);
-		InputStreamReader inReader = new InputStreamReader(inStream);
-		GoogleMapper results = new Gson().fromJson( inReader , GoogleMapper.class);
-		System.out.println("Status: " + results.status);
-		for(Results result : results.results){
-			if(!resultInList(allResults, result)) allResults.add(result);
-			System.out.println("ID: " + result.id);
-		}
-		System.out.println("count: " + allResults.size());
-		return allResults;
-	}
-	
-	public static boolean resultInList(ArrayList<Results> results, Results result){
-		for(Results r : results){
-			if(r.id.equals(result.id)) return true;
-		}
-		return false;
 	}
 	
 }

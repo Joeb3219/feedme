@@ -69,6 +69,9 @@ public class EatStreetRestaurant {
 	@SerializedName("open")
 	public boolean open;
 	
+	@SerializedName("menu")
+	public EatStreetMenu menu;
+	
 //	@SerializedName("hours")
 	//public EatStreetHours hours;
 	
