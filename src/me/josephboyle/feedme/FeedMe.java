@@ -28,7 +28,9 @@ public class FeedMe {
 		Packet packet = new Packet(language, "", Packet.PacketType.START);
 		bot.processInputs(packet);
 
-		ArrayList<Results> allResults = generateAllRestaurantsNearby(null);
+		ArrayList<Results> allResults = generateAllRestaurantsNearby();
+		
+		if(1 == 1) return;
 		
 //		Results[] allResults = new Results[60];
 		
@@ -53,24 +55,17 @@ public class FeedMe {
 		
 	}
 	
-	public static ArrayList<Results> generateAllRestaurantsNearby(String nextPage) throws IOException, InterruptedException{
+	public static ArrayList<Results> generateAllRestaurantsNearby() throws IOException, InterruptedException{
 		ArrayList<Results> allResults = new ArrayList<Results>();
-		InputStream inStream;
-		if(nextPage == null) inStream = WebRequest.getPlacesRequest("nearbysearch", "type=restaurant&location=" + WebRequest.latitude + "," + WebRequest.longitude + "&radius=" + WebRequest.searchRadius);
-		else inStream = WebRequest.getPlacesRequest("nearbysearch", "pagetoken=" + nextPage);
+		InputStream inStream = WebRequest.getPlacesRequest("radarsearch", "type=restaurant&location=" + WebRequest.latitude + "," + WebRequest.longitude + "&radius=" + WebRequest.searchRadius);
 		InputStreamReader inReader = new InputStreamReader(inStream);
 		GoogleMapper results = new Gson().fromJson( inReader , GoogleMapper.class);
 		System.out.println("Status: " + results.status);
 		for(Results result : results.results){
 			if(!resultInList(allResults, result)) allResults.add(result);
+			System.out.println("ID: " + result.id);
 		}
-		if(results.next_page_token != null && !results.next_page_token.isEmpty()){
-			TimeUnit.SECONDS.sleep(2);
-			ArrayList<Results> returnedResults = generateAllRestaurantsNearby(results.next_page_token);
-			for(Results r : returnedResults){
-				if(!resultInList(allResults, r)) allResults.add(r);
-			}
-		}
+		System.out.println("count: " + allResults.size());
 		return allResults;
 	}
 	

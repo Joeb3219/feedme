@@ -14,6 +14,9 @@ public class WebRequest {
 	public static final String longitude = "-74.4633";
 	public static final String searchRadius = "20000";
 	
+	public static final String ZOMATO_API_KEY = "0039b2179664ff6d381ee8b09468651b";
+	public static final String EATSTREET_API_KEY = "e962bcaca75183ff";
+	
 	public static String requestToString(InputStream stream) throws IOException{
 		String s = "", line = "";
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
