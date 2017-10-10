@@ -25,25 +25,7 @@ public class WebRequest {
 		}
 		return s;
 	}
-	
-	public static InputStream getPlacesRequest(String bucket, String parameters) throws IOException{
-	//	HttpClient client = HttpClients.createDefault();
-		String url  = "https://maps.googleapis.com/maps/api/place/" + bucket + "/json";
-		if(parameters != null) parameters += "&key=AIzaSyCkcn-dySbSoQnDXF7NWF2wk9EnCXsilL4";
-		url += "?" + parameters;
-		System.out.println(url);
-		URL requestUrl = new URL(url);
-		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
-		connection.setRequestMethod("GET");
-		connection.setDoOutput(true);
-		
-		DataOutputStream sendRequest = new DataOutputStream(connection.getOutputStream());
-		sendRequest.close();
-		
-		InputStream result = connection.getInputStream();
-		return result;
-	}
-	
+
 	public static InputStream getEatStreetRequest(String bucket, String parameters) throws IOException{
 		//	HttpClient client = HttpClients.createDefault();
 		String url  = "https://api.eatstreet.com/publicapi/v1/restaurant/" + bucket;

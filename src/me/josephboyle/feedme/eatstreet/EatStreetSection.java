@@ -20,7 +20,7 @@ public class EatStreetSection {
 		
 		s += "== " + name + " ==\r\n";
 		for(EatStreetItem i : items){
-			s += i + "\r\n";
+			s += i + " \r\n";
 		}
 		
 		return s;

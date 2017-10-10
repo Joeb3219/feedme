@@ -12,31 +12,48 @@ import me.josephboyle.feedme.eatstreet.EatStreetRestaurant;
 
 public class FeedMe {
 
+	public static final boolean loadRestaurantsLive = false;
+	public static final boolean showDebugPrints = false;
+	
 	public static void main(String... args) throws Exception {
 	    
 		LanguageServiceClient language = LanguageServiceClient.create();
 		
-		Bot bot = new Bot(language);
+		Bot bot;
+		Packet packet;
 		
-		
-		Packet packet = new Packet(language, "", Packet.PacketType.START);
-		bot.processInputs(packet);
+		List<EatStreetRestaurant> restaurants = null;
+		List<String> foodTypes = null;
 		
 		try{
-			List<EatStreetRestaurant> restaurants = EatStreetLoader.loadRestaurantsCached();
-			System.out.println("Total number requests: " + restaurants.size());
-			System.out.println("================================================");
-			for(EatStreetRestaurant restaurant : restaurants){
-				System.out.println(restaurant.toString());
-				System.out.println("================================================");
+			if(!FeedMe.loadRestaurantsLive) restaurants = EatStreetLoader.loadRestaurantsCached();
+			if(FeedMe.loadRestaurantsLive || restaurants == null || restaurants.isEmpty()){
+				System.out.println("Loading restaurants live!");
+				restaurants = EatStreetLoader.loadRestaurantsLive();
+				EatStreetLoader.saveRestaurants(restaurants);
 			}
-			System.out.println("Total number requests: " + restaurants.size());
-			EatStreetLoader.saveRestaurants(restaurants);
+			foodTypes = EatStreetLoader.getFoodCategories(restaurants);
+			if(showDebugPrints){
+				System.out.println("Total number requests: " + restaurants.size());
+				System.out.println("================================================");
+				for(EatStreetRestaurant restaurant : restaurants){
+					System.out.println(restaurant.toString());
+					System.out.println("================================================");
+				}
+				System.out.println("Total number requests: " + restaurants.size());
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		
-		if(1 == 1) return;
+		if(restaurants == null || foodTypes == null){
+			System.out.println("An error occurred in the creation of restaurants");
+		}
+		
+		bot = new Bot(language, restaurants, foodTypes);
+		
+		packet = new Packet(language, "", Packet.PacketType.START);
+		bot.processInputs(packet);
 		
 		Scanner scanner = new Scanner(System.in);
 		String line;

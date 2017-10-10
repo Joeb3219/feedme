@@ -1,5 +1,6 @@
 package me.josephboyle.feedme.eatstreet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
@@ -77,9 +78,14 @@ public class EatStreetRestaurant {
 	
 	public String toString(){
 		String result = "";
-		result += name + "\r\n";
-		result += address + " (" + latitude + "," + longitude + ")";
-		result += menu.toString();
+		result += name + " \r\n";
+		result += address + " \r\n";
+		result += menu.toString() + " \r\n";
+		if(pickup) result += "pickup" + " \r\n";
+		if(delivery) result += "delivery" + "\r\n";
+		
+		for(String type : foodTypes) result += type;
+		
 		return result;
 	}
 	

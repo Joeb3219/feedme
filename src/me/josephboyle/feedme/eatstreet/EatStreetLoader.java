@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +18,18 @@ import me.josephboyle.feedme.tools.WebRequest;
 public class EatStreetLoader {
 
 	public static final String RESTAURANTS_FILE = "restaurants.json";
+	
+	public static List<String> getFoodCategories(List<EatStreetRestaurant> restaurants){
+		List<String> foodTypes = new ArrayList<String>();
+		
+		for(EatStreetRestaurant restaurant : restaurants){
+			for(String type : restaurant.foodTypes){
+				if(!foodTypes.contains(type)) foodTypes.add(type);
+			}
+		}
+		
+		return foodTypes;
+	}
 	
 	public static List<EatStreetRestaurant> loadRestaurantsCached() throws FileNotFoundException{
 		List<EatStreetRestaurant> restaurants = new Gson().fromJson(new FileReader(RESTAURANTS_FILE), new TypeToken<List<EatStreetRestaurant>>(){}.getType());
