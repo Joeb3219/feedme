@@ -44,4 +44,22 @@ public class WebRequest {
 		return result;
 	}
 	
+	public static InputStream getEatStreetRequest(String bucket, String parameters) throws IOException{
+		//	HttpClient client = HttpClients.createDefault();
+		String url  = "https://api.eatstreet.com/publicapi/v1/restaurant/" + bucket;
+		if(parameters != null) url += "?" + parameters;
+		System.out.println(url);
+		URL requestUrl = new URL(url);
+		HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
+		connection.setRequestProperty("X-Access-Token", EATSTREET_API_KEY);
+		connection.setRequestMethod("GET");
+		connection.setDoOutput(true);
+		
+		DataOutputStream sendRequest = new DataOutputStream(connection.getOutputStream());
+		sendRequest.close();
+		
+		InputStream result = connection.getInputStream();
+		return result;
+	}
+	
 }
