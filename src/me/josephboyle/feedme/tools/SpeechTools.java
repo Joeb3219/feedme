@@ -16,6 +16,33 @@ public class SpeechTools {
 	private static final double SENTIMENT_NEGATIVE_SCORE = -0.4;
 	private static final double SENTIMENT_MAGNITUDE_MIXED = 0.4;
 	
+	// For now, we implement a selection sort.
+	// This is for a philosophy course.
+	// What could possibly go wrong?
+	public static Sortable[] sort(Sortable[] objects){
+		for(int i = 0; i < objects.length; i ++){
+			int biggest = i;
+			for(int j = i; j < objects.length; j ++){
+				if(objects[j].score > objects[biggest].score) biggest = j;
+			}
+			Sortable tmp = objects[i];
+			objects[i] = objects[biggest];
+			objects[biggest] = tmp;
+			
+		}
+		return objects;
+	}
+	
+	public static Sortable[] reorderRestaurants(List<EatStreetRestaurant> restaurants, double[] scores){
+		Sortable[] sortableRestaurants = new Sortable[restaurants.size()];
+		
+		for(int i = 0; i < sortableRestaurants.length; i ++){
+			sortableRestaurants[i] = new Sortable(restaurants.get(i), scores[i]);
+		}
+		
+		return sort(sortableRestaurants);
+	}
+	
 	public static double[] getCosineSimilarities(List<EatStreetRestaurant> restaurants, String query){
 		double[] similarities = new double[restaurants.size()];
 		double[][] termFrequencies = new double[restaurants.size()][];

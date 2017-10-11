@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.cloud.language.v1.LanguageServiceClient;
 
 import me.josephboyle.feedme.eatstreet.EatStreetRestaurant;
+import me.josephboyle.feedme.tools.Sortable;
 import me.josephboyle.feedme.tools.SpeechTools;
 
 public class Bot {
@@ -27,9 +28,10 @@ public class Bot {
 		}
 
 		double[] similarities = SpeechTools.getCosineSimilarities(restaurants, packet.rawText);
-		for(int i = 0; i < restaurants.size(); i ++){
-			if(similarities[i] == 0) continue;
-			System.out.println(restaurants.get(i).name + ": "  + similarities[i]);
+		Sortable[] orderedResults = SpeechTools.reorderRestaurants(restaurants, similarities);
+		for(int i = 0; i < orderedResults.length; i ++){
+			if(orderedResults[i].score == 0) continue;
+			System.out.println(((EatStreetRestaurant)orderedResults[i].object).name + ": " + orderedResults[i].score);
 		}
 		
 		//packet.processSentiment();
