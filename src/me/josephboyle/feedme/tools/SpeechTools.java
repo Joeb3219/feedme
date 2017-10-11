@@ -16,19 +16,19 @@ public class SpeechTools {
 	private static final double SENTIMENT_NEGATIVE_SCORE = -0.4;
 	private static final double SENTIMENT_MAGNITUDE_MIXED = 0.4;
 	
-	public double[] getCosineSimilarities(List<EatStreetRestaurant> restaurants, String query){
+	public static double[] getCosineSimilarities(List<EatStreetRestaurant> restaurants, String query){
 		double[] similarities = new double[restaurants.size()];
-		int[][] termFrequencies = new int[restaurants.size()][];
+		double[][] termFrequencies = new double[restaurants.size()][];
 		String[] queryArray = stringToArray(query);
-		double[] numDocsWithWord = new double[query.length()];
-		double[][] tdidf = new double[restaurants.size()][query.length()];
+		double[] numDocsWithWord = new double[queryArray.length];
+		double[][] tdidf = new double[restaurants.size()][queryArray.length];
 		
 		// First we compute the TF
 		for(int i = 0; i < restaurants.size(); i ++){
 			EatStreetRestaurant restaurant = restaurants.get(i);
 			termFrequencies[i] = getTermFrequency(stringToArray(restaurant.toString()), queryArray);
 			// Here we increase each word by 1 if it occurred in the document.
-			for(int j = 0; j < termFrequencies.length; j ++){
+			for(int j = 0; j < termFrequencies[i].length; j ++){
 				if(termFrequencies[i][j] > 0) numDocsWithWord[j] += 1; 
 			}
 		}
@@ -45,30 +45,49 @@ public class SpeechTools {
 			}
 		}
 		
-		// Now we must compute the
+		// Now we compute the TDF of the query, to normalize it for the number of words used:
+		double[] queryTdf = getTermFrequency(queryArray, queryArray);
+		
+		// Now for each document, we compute: dot(D,queryIdf)/(||D||, ||queryIdf||)
+		for(int i = 0; i < similarities.length; i ++){
+			similarities[i] = dotProduct(tdidf[i], queryTdf);
+			double normalization = norm(tdidf[i]) * norm(queryTdf);
+			if(normalization != 0) similarities[i] /= (normalization);
+			else similarities[i] = 0;
+		}
 		
 		return similarities;
 	}
 	
-	public double euclidianDistance(double[] array){
+	public static double dotProduct(double[] a, double[] b){
+		double result = 0;
+		
+		for(int i = 0; i < a.length; i ++){
+			result += (a[i] * b[i]);
+		}
+		
+		return result;
+	}
+	
+	public static double norm(double[] array){
 		double result = 0.0;
 		for(double d : array) result += (d * d);
 		return Math.sqrt(result);
 	}
 	
-	public int[] getTermFrequency(String[] document, String[] query){
-		int[] freq = new int[query.length];
+	public static double[] getTermFrequency(String[] document, String[] query){
+		double[] freq = new double[query.length];
 		
 		for(int i = 0; i < query.length; i ++){
 			for(int j = 0; j < document.length; j ++){
-				if(document[j].equals(query[i])) freq[i] ++;
+				if(document[j].equalsIgnoreCase(query[i])) freq[i] += (1.0 / document.length);
 			}
 		}
 		
 		return freq;
 	}
 	
-	public String[] stringToArray(String s){
+	public static String[] stringToArray(String s){
 		String[] result;
 		String[] strippableWords = {"==", "==\r\n", "\r\n", ".", ",", "!", ";"};
 		String[] exploded = s.split(" ");
@@ -82,7 +101,7 @@ public class SpeechTools {
 		return result;
 	}
 
-	private String stripDelimiters(String s, String[] delimiters){
+	private static String stripDelimiters(String s, String[] delimiters){
 		for(String del : delimiters){
 			s = s.replace(del, "");
 		}

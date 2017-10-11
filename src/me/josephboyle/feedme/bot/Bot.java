@@ -26,6 +26,11 @@ public class Bot {
 			return;
 		}
 
+		double[] similarities = SpeechTools.getCosineSimilarities(restaurants, packet.rawText);
+		for(int i = 0; i < restaurants.size(); i ++){
+			if(similarities[i] == 0) continue;
+			System.out.println(restaurants.get(i).name + ": "  + similarities[i]);
+		}
 		
 		//packet.processSentiment();
 		//speak("You said: " + packet.rawText);
