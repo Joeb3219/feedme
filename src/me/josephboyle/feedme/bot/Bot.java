@@ -26,31 +26,13 @@ public class Bot {
 			return;
 		}
 
-		String[] strippableWords = {".", ",", "!", ";"};
-		
-		for(String word : packet.rawText.split(" ")){
-			word = stripDelimiters(word, strippableWords);
-			System.out.println(word);
-			for(EatStreetRestaurant restaurant : restaurants){
-				for(String type : restaurant.foodTypes){
-					
-				}
-			}
-		}
 		
 		//packet.processSentiment();
 		//speak("You said: " + packet.rawText);
 		//speak("Score: " + packet.sentiment.getScore() + "; Magnitude: " + packet.sentiment.getMagnitude());
 		//speak("Your sentiment: " + SpeechTools.getSentimentValue(packet.sentiment));
 	}
-	
-	private String stripDelimiters(String s, String[] delimiters){
-		for(String del : delimiters){
-			s = s.replace(del, "");
-		}
-		return s;
-	}
-	
+		
 	public void speak(String s){
 		System.out.println("[Alan]: " + s);
 	}
