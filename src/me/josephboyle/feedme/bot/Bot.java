@@ -27,12 +27,17 @@ public class Bot {
 			return;
 		}
 
-		double[] similarities = SpeechTools.getCosineSimilarities(restaurants, packet.rawText);
-		Sortable[] orderedResults = SpeechTools.reorderRestaurants(restaurants, similarities);
+		String keywords = SpeechTools.getKeywords(packet);
+		
+		System.out.println("Keywords: " + keywords);
+		
+		double[] similarities = SpeechTools.getCosineSimilarities(restaurants, keywords);
+		Sortable[] results = SpeechTools.removeInsignificantSortables(SpeechTools.reorderRestaurants(restaurants, similarities));
+		Sortable[] orderedResults = SpeechTools.paginate(results, 0, 8);
 		for(int i = 0; i < orderedResults.length; i ++){
-			if(orderedResults[i].score == 0) continue;
 			System.out.println(((EatStreetRestaurant)orderedResults[i].object).name + ": " + orderedResults[i].score);
 		}
+		
 		
 		//packet.processSentiment();
 		//speak("You said: " + packet.rawText);

@@ -2,8 +2,10 @@ package me.josephboyle.feedme.tools;
 
 import java.util.List;
 
+import com.google.cloud.language.v1.Entity;
 import com.google.cloud.language.v1.Sentiment;
 
+import me.josephboyle.feedme.bot.Packet;
 import me.josephboyle.feedme.eatstreet.EatStreetRestaurant;
 
 public class SpeechTools {
@@ -15,6 +17,68 @@ public class SpeechTools {
 	private static final double SENTIMENT_POSITIVE_SCORE = 0.4;
 	private static final double SENTIMENT_NEGATIVE_SCORE = -0.4;
 	private static final double SENTIMENT_MAGNITUDE_MIXED = 0.4;
+	private static final double SORTABLE_SCORE_SIGNIFICANT = 0.55;
+	
+	public static String getKeywords(Packet packet){
+		String keywords = "";
+		
+		double totalSalience = 0.0;
+		double averageSalience = 0.0;
+		
+		packet.processEntities();
+		
+		for(Entity entity : packet.entities.getEntitiesList()){
+			totalSalience += entity.getSalience();
+		}
+		
+		averageSalience = totalSalience / packet.entities.getEntitiesCount();
+		
+		for(Entity entity : packet.entities.getEntitiesList()){
+			int numRepetitions = (int) Math.ceil(entity.getSalience() / averageSalience);
+			for(int i = 0; i < numRepetitions; i ++){
+				keywords += entity.getName() + " ";
+			}
+		}
+		
+		return keywords;
+	}
+	
+	// Returns between 0 and resultsPerPage, given the page number.
+	// If we have 12 objects and are on page 1, we get 8 results.
+	// If we are have 12 objects and are on page 2, we get 4 results.
+	public static Sortable[] paginate(Sortable[] objects, int page, int resultsPerPage){
+		int startIndex = (page * resultsPerPage);
+		int numResults = objects.length - startIndex;
+		
+		// If <= 0, then there aren't any results on this page so we can just stop now.
+		if(numResults <= 0){
+			return new Sortable[0];
+		}
+
+		// Now we restrict to our desired size.
+		if(numResults > resultsPerPage) numResults = resultsPerPage;
+		Sortable[] results = new Sortable[numResults];
+		int j = 0;
+		for(int i = startIndex; i < (startIndex + numResults); i ++){
+			results[j ++] = objects[i];
+		}
+		return results;
+	}
+	
+	public static Sortable[] removeInsignificantSortables(Sortable[] objects){
+		int numSignificant = 0;
+		for(int i = 0; i < objects.length; i ++){
+			if(objects[i].score >= SORTABLE_SCORE_SIGNIFICANT) numSignificant ++;
+		}
+		Sortable[] significant = new Sortable[numSignificant];
+
+		int j = 0;
+		for(int i = 0; i < objects.length; i ++){
+			if(objects[i].score >= SORTABLE_SCORE_SIGNIFICANT) significant[j ++] = objects[i];
+		}
+		
+		return significant;
+	}
 	
 	// For now, we implement a selection sort.
 	// This is for a philosophy course.
