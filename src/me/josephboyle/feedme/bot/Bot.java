@@ -20,7 +20,8 @@ public class Bot {
 	private LanguageServiceClient language;
 	private List<EatStreetRestaurant> restaurants;
 	private BotState state = BotState.INITIAL;
-	private double[] restaurantSimilaritiesToPreviousQuery;
+	private double[] restaurantSimilaritiesToPreviousQuery = null;
+	private String keywordsToPreviousQuery = null;
 	
 	
 	public Bot(LanguageServiceClient language, List<EatStreetRestaurant> restaurants){
@@ -95,15 +96,16 @@ public class Bot {
 	
 	private void suggestRestaurant(EatStreetRestaurant r){
 		speak("Here's my suggestion:");
-		speak(r.name);
+		speak(r.getDescription());
+		speak(r.getKeywordTriggers(keywordsToPreviousQuery));
 	}
 	
 	private void getKeywordsAndRefine(Packet packet){
-		String keywords = SpeechTools.getKeywords(packet);
+		keywordsToPreviousQuery = SpeechTools.getKeywords(packet);
 		
-		debug("Keywords: " + keywords);
+		debug("Keywords: " + keywordsToPreviousQuery);
 		
-		restaurantSimilaritiesToPreviousQuery = SpeechTools.getCosineSimilarities(restaurants, keywords);
+		restaurantSimilaritiesToPreviousQuery = SpeechTools.getCosineSimilarities(restaurants, keywordsToPreviousQuery);
 	}
 	
 	private EatStreetRestaurant getNextSuggestion(){

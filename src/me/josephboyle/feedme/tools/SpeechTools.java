@@ -24,7 +24,7 @@ public class SpeechTools {
 		String[] acceptanceStrings = {
 			"Yes", "Yes please", "Yes I'd like that", "Sounds good", "I pick that", "That's good",
 			"I'll go there", "I like it here", "I like that", "that's good", "good", "okay", "ok", "k",
-			"sure", "great"
+			"sure", "great", "yeah", "Yah"
 		};
 		for(String acceptanceString : acceptanceStrings){
 			if(s.equalsIgnoreCase(acceptanceString)) return true;
@@ -35,7 +35,7 @@ public class SpeechTools {
 	public static boolean isRejectionString(String s){
 		String[] rejectionStrings = {
 				"No", "I hate it", "I don't like it there", "no thanks", "gross", "don't want", "bad",
-				"awful", "negative", "bad idea", "please don't", "i'd rather not"
+				"awful", "negative", "bad idea", "please don't", "i'd rather not", "nah"
 			};
 			for(String rejection : rejectionStrings){
 				if(s.equalsIgnoreCase(rejection)) return true;
@@ -65,7 +65,9 @@ public class SpeechTools {
 					keywords += w.getToken() + " ";
 				}
 			}
-		}catch(Exception e){e.printStackTrace();}
+		}catch(Exception e){
+			keywords = packet.rawText;
+		}
 		
 		return keywords;
 	}

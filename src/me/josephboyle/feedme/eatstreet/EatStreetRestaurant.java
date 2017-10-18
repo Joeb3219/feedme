@@ -18,6 +18,20 @@ public class EatStreetRestaurant {
 		return logWeight * similarity;
 	}
 	
+	public String getDescription(){
+		String desc = "";
+		desc += name + " (" + address + ")" + "\r\n";
+		if(foodTypes.size() > 0) desc += "Serving the following types of food: ";
+		for(String s : foodTypes) desc += s + "; ";
+		return desc;
+	}
+	
+	public String getKeywordTriggers(String keywords){
+		String triggers = "";
+		
+		return triggers;
+	}
+	
 	@SerializedName("weight")
 	public int weight = 1;
 	
@@ -92,13 +106,13 @@ public class EatStreetRestaurant {
 	
 	public String toString(){
 		String result = "";
-		result += name + " \r\n";
-		result += address + " \r\n";
-		result += menu.toString() + " \r\n";
-		if(pickup) result += "pickup" + " \r\n";
-		if(delivery) result += "delivery" + "\r\n";
+		result += name + " \r\n ";
+		result += address + " \r\n ";
+		result += menu.toString() + " \r\n ";
+		if(pickup) result += "pickup" + " \r\n ";
+		if(delivery) result += "delivery" + " \r\n ";
 		
-		for(String type : foodTypes) result += type;
+		for(String type : foodTypes) result += type + " \r\n ";
 		
 		return result;
 	}
