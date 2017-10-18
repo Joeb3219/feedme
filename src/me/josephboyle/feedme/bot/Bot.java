@@ -38,11 +38,6 @@ public class Bot {
 			System.out.println(((EatStreetRestaurant)orderedResults[i].object).name + ": " + orderedResults[i].score);
 		}
 		
-		
-		//packet.processSentiment();
-		//speak("You said: " + packet.rawText);
-		//speak("Score: " + packet.sentiment.getScore() + "; Magnitude: " + packet.sentiment.getMagnitude());
-		//speak("Your sentiment: " + SpeechTools.getSentimentValue(packet.sentiment));
 	}
 		
 	public void speak(String s){

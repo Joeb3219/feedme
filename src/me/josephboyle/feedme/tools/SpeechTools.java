@@ -34,7 +34,8 @@ public class SpeechTools {
 		averageSalience = totalSalience / packet.entities.getEntitiesCount();
 		
 		for(Entity entity : packet.entities.getEntitiesList()){
-			int numRepetitions = (int) Math.ceil(entity.getSalience() / averageSalience);
+			int numRepetitions = 1;//(int) Math.ceil(entity.getSalience() / averageSalience);
+			
 			for(int i = 0; i < numRepetitions; i ++){
 				keywords += entity.getName() + " ";
 			}

@@ -4,6 +4,13 @@
   <artifactId>FeedMe</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <build>
+  <repositories>
+  <repository>
+        <id>galan-maven-repo</id>
+        <name>galan-maven-repo-releases</name>
+        <url>http://galan.ehu.es/artifactory/ext-release-local</url>
+ </repository>
+  </repositories>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
       <plugin>
@@ -26,6 +33,11 @@
 	    <groupId>org.json</groupId>
 	    <artifactId>json</artifactId>
 	    <version>20170516</version>
+	</dependency>
+	<dependency>
+	  <groupId>com.textrazor</groupId>
+	  <artifactId>textrazor</artifactId>
+	  <version>1.0.9</version>
 	</dependency>
   </dependencies>
 </project>
