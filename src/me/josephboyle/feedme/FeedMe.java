@@ -16,14 +16,12 @@ public class FeedMe {
 	public static final boolean showDebugPrints = false;
 	
 	public static void main(String... args) throws Exception {
-	    
 		LanguageServiceClient language = LanguageServiceClient.create();
 		
 		Bot bot;
 		Packet packet;
 		
 		List<EatStreetRestaurant> restaurants = null;
-		List<String> foodTypes = null;
 		
 		try{
 			if(!FeedMe.loadRestaurantsLive) restaurants = EatStreetLoader.loadRestaurantsCached();
@@ -32,7 +30,6 @@ public class FeedMe {
 				restaurants = EatStreetLoader.loadRestaurantsLive();
 				EatStreetLoader.saveRestaurants(restaurants);
 			}
-			foodTypes = EatStreetLoader.getFoodCategories(restaurants);
 			if(showDebugPrints){
 				System.out.println("Total number requests: " + restaurants.size());
 				System.out.println("================================================");
@@ -46,11 +43,11 @@ public class FeedMe {
 			e.printStackTrace();
 		}
 		
-		if(restaurants == null || foodTypes == null){
+		if(restaurants == null){
 			System.out.println("An error occurred in the creation of restaurants");
 		}
 		
-		bot = new Bot(language, restaurants, foodTypes);
+		bot = new Bot(language, restaurants);
 		
 		packet = new Packet(language, "", Packet.PacketType.START);
 		bot.processInputs(packet);
@@ -62,6 +59,7 @@ public class FeedMe {
 			line = scanner.nextLine();
 			packet = new Packet(language, line, Packet.PacketType.USER);
 			bot.processInputs(packet);
+	//		EatStreetLoader.saveRestaurants(restaurants);
 		}
 		
 	}

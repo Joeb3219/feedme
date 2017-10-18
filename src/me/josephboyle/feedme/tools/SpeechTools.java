@@ -2,8 +2,9 @@ package me.josephboyle.feedme.tools;
 
 import java.util.List;
 
-import com.google.cloud.language.v1.Entity;
 import com.google.cloud.language.v1.Sentiment;
+import com.textrazor.annotations.NounPhrase;
+import com.textrazor.annotations.Word;
 
 import me.josephboyle.feedme.bot.Packet;
 import me.josephboyle.feedme.eatstreet.EatStreetRestaurant;
@@ -17,31 +18,64 @@ public class SpeechTools {
 	private static final double SENTIMENT_POSITIVE_SCORE = 0.4;
 	private static final double SENTIMENT_NEGATIVE_SCORE = -0.4;
 	private static final double SENTIMENT_MAGNITUDE_MIXED = 0.4;
-	private static final double SORTABLE_SCORE_SIGNIFICANT = 0.55;
+	private static final double SORTABLE_SCORE_SIGNIFICANT = 0.001;
+	
+	public static boolean isAcceptanceString(String s){
+		String[] acceptanceStrings = {
+			"Yes", "Yes please", "Yes I'd like that", "Sounds good", "I pick that", "That's good",
+			"I'll go there", "I like it here", "I like that", "that's good", "good", "okay", "ok", "k",
+			"sure", "great"
+		};
+		for(String acceptanceString : acceptanceStrings){
+			if(s.equalsIgnoreCase(acceptanceString)) return true;
+		}
+		return false;
+	}
+	
+	public static boolean isRejectionString(String s){
+		String[] rejectionStrings = {
+				"No", "I hate it", "I don't like it there", "no thanks", "gross", "don't want", "bad",
+				"awful", "negative", "bad idea", "please don't", "i'd rather not"
+			};
+			for(String rejection : rejectionStrings){
+				if(s.equalsIgnoreCase(rejection)) return true;
+			}
+			return false;
+	}
+	
+	public static boolean isAskingForMenuString(String s){
+		String[] strings = {
+				"menu", "show me the menu", "what do they have", "what's on their menu", "what can I get there", "what do they serve",
+				"where is the menu", "where is their menu", "what are the options", "what can I eat there", "menu please", "give me the menu"
+		};
+		for(String string : strings){
+			if(s.equalsIgnoreCase(string)) return true;
+		}
+		return false;
+	}
 	
 	public static String getKeywords(Packet packet){
 		String keywords = "";
 		
-		double totalSalience = 0.0;
-		double averageSalience = 0.0;
-		
-		packet.processEntities();
-		
-		for(Entity entity : packet.entities.getEntitiesList()){
-			totalSalience += entity.getSalience();
-		}
-		
-		averageSalience = totalSalience / packet.entities.getEntitiesCount();
-		
-		for(Entity entity : packet.entities.getEntitiesList()){
-			int numRepetitions = 1;//(int) Math.ceil(entity.getSalience() / averageSalience);
-			
-			for(int i = 0; i < numRepetitions; i ++){
-				keywords += entity.getName() + " ";
+		try{
+			packet.analyzeText();
+			for(NounPhrase noun : packet.analyzedText.getResponse().getNounPhrases()){
+				if(!isPhraseKeyword(noun)) continue;
+				for(Word w : noun.getWords()){
+					keywords += w.getToken() + " ";
+				}
 			}
-		}
+		}catch(Exception e){e.printStackTrace();}
 		
 		return keywords;
+	}
+	
+	public static boolean isPhraseKeyword(NounPhrase phrase){
+		if(phrase.getWords().size() == 1){
+			String s = phrase.getWords().get(0).getToken();
+			if(s.equalsIgnoreCase("I") || s.equalsIgnoreCase("or")) return false;
+		}
+		return true;
 	}
 	
 	// Returns between 0 and resultsPerPage, given the page number.
@@ -102,7 +136,7 @@ public class SpeechTools {
 		Sortable[] sortableRestaurants = new Sortable[restaurants.size()];
 		
 		for(int i = 0; i < sortableRestaurants.length; i ++){
-			sortableRestaurants[i] = new Sortable(restaurants.get(i), scores[i]);
+			sortableRestaurants[i] = new Sortable(restaurants.get(i), restaurants.get(i).computeSimarityWeight(scores[i]));
 		}
 		
 		return sort(sortableRestaurants);

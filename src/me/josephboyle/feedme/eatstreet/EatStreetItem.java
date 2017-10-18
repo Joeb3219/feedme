@@ -16,10 +16,18 @@ public class EatStreetItem {
 	@SerializedName("basePrice")
 	public double basePrice;
 	
-	public String toString(){
+	public String toPrettyString(){
 		String s = "";
 		
 		s += name + ": " + description + " (" + basePrice + ")";
+		
+		return s;
+	}
+	
+	public String toString(){
+		String s = "";
+		
+		s += name + ": " + description;
 		
 		return s;
 	}

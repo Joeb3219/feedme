@@ -1,12 +1,26 @@
 package me.josephboyle.feedme.eatstreet;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
 public class EatStreetRestaurant {
 
+	// computes |ln(e+(2e*(w'-0.5)))|*similarity, where w' is the weight scaled to 0 through 1.
+	public double computeSimarityWeight(double similarity){
+		int maxWeight = 21;
+		int minWeight = -20;
+		if(weight <= minWeight) weight = minWeight + 1;
+		if(weight >= maxWeight) weight = maxWeight - 1;
+		double scaledWeight = (double) (weight - minWeight) / (maxWeight - minWeight);
+		double logWeight = Math.log(Math.E + (2 * (scaledWeight - 0.5) * Math.E));
+		logWeight = (logWeight + 2.1) / (4.1);
+		return logWeight * similarity;
+	}
+	
+	@SerializedName("weight")
+	public int weight = 1;
+	
 	@SerializedName("apiKey")
 	public String apiKey;
 	

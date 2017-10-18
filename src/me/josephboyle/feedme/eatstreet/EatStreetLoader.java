@@ -19,6 +19,10 @@ public class EatStreetLoader {
 
 	public static final String RESTAURANTS_FILE = "restaurants.json";
 	
+	public static void weightRestaurant(EatStreetRestaurant restaurant, int deltaWeight){
+		restaurant.weight += deltaWeight;
+	}
+	
 	public static List<String> getFoodCategories(List<EatStreetRestaurant> restaurants){
 		List<String> foodTypes = new ArrayList<String>();
 		

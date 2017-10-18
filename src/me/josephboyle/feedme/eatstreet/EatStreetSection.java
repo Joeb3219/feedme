@@ -15,12 +15,22 @@ public class EatStreetSection {
 	@SerializedName("name")
 	public String name;
 	
+	public String toPrettyString(){
+		String s = "";
+		s += "== " + name + " ==\r\n";
+		for(EatStreetItem i : items){
+			s += i.toPrettyString() + " \r\n";
+		}
+		
+		return s;
+	}
+	
 	public String toString(){
 		String s = "";
 		
 		s += "== " + name + " ==\r\n";
 		for(EatStreetItem i : items){
-			s += i + " \r\n";
+			s += i.toString() + " \r\n";
 		}
 		
 		return s;
